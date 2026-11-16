@@ -10,7 +10,7 @@ const UI = {
   prospect: {
     status: 'all', mode: 'all', source: 'all',
     company: 'all', agency: 'all', level: 'all', category: 'all',
-    fit: 'all', attrs: {}, sort: 'activity',
+    size: 'all', industry: 'all', fit: 'all', attrs: {}, sort: 'activity',
   },
   material: { type: 'all', stale: false },
   activity: { prospect: 'all', type: 'all' },

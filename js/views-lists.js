@@ -31,6 +31,8 @@ function filteredProspects() {
   if (f.agency !== 'all') list = list.filter(p => p.agencyId === f.agency);
   if (f.level !== 'all') list = list.filter(p => p.level === f.level);
   if (f.category !== 'all') list = list.filter(p => p.category === f.category);
+  if (f.size !== 'all') list = list.filter(p => sizeBand(employerOrg(p)?.employees) === f.size);
+  if (f.industry !== 'all') list = list.filter(p => fitValueMatches('industry', employerOrg(p)?.industry || '', f.industry));
   Object.entries(f.attrs || {}).forEach(([attrId, value]) => {
     if (!value || value === 'all') return;
     list = list.filter(p => {
@@ -102,6 +104,14 @@ function renderProspects() {
     <select class="control" data-prospect-filter="category" aria-label="Filter by job category">
       <option value="all">All categories</option>
       ${categories.map(c => `<option value="${c}" ${UI.prospect.category === c ? 'selected' : ''}>${esc(c)}</option>`).join('')}
+    </select>
+    <select class="control" data-prospect-filter="size" aria-label="Filter by company size">
+      <option value="all">All company sizes</option>
+      ${SIZE_BANDS.filter(b => b.key !== 'unknown').map(b => `<option value="${b.key}" ${UI.prospect.size === b.key ? 'selected' : ''}>${b.label}</option>`).join('')}
+    </select>
+    <select class="control" data-prospect-filter="industry" aria-label="Filter by industry">
+      <option value="all">All industries</option>
+      ${knownIndustries().map(i => `<option value="${esc(i)}" ${UI.prospect.industry === i ? 'selected' : ''}>${esc(i)}</option>`).join('')}
     </select>
     <select class="control" data-prospect-filter="mode" aria-label="Filter by work mode">
       <option value="all">All work modes</option>
@@ -176,12 +186,10 @@ function prospectResultsHtml() {
           const fit = fitScore(p);
           const mats = db.materials.filter(m => p.materialIds.includes(m.id));
           const src = sourceById(p.sourceId);
-          const agency = agencyOrg(p);
           return `<tr data-row-prospect="${p.id}">
             <td>
               <div class="cell-title">${esc(prospectOrgLabel(p))} ${isSnoozed(p) ? '<span class="pill stone tiny">Snoozed</span>' : ''}</div>
               <div class="cell-sub">${esc(p.title)}${p.level ? ` · ${esc(p.level)}` : ''}${p.category ? ` · ${esc(p.category)}` : ''}${p.salary ? ` · ${esc(p.salary)}` : ''}</div>
-              ${agency ? `<div class="cell-sub agency-line">Via ${esc(agency.name)}</div>` : ''}
             </td>
             <td>
               <select class="status-select ${p.status}" data-status-for="${p.id}" aria-label="Status for ${esc(prospectOrgName(p))}">
@@ -210,9 +218,10 @@ function prospectResultsHtml() {
 function orgAttributeChips(org) {
   const chips = [];
   db.settings.attributes.forEach(attr => {
-    orgAttrValues(org, attr.id).forEach(value => {
-      chips.push(`<span class="attr-chip">${esc(attr.label)}: <b>${esc(value)}</b></span>`);
-    });
+    const values = orgAttrValues(org, attr.id);
+    if (values.length) {
+      chips.push(`<span class="attr-chip">${esc(attr.label)}: <b>${values.map(esc).join(', ')}</b></span>`);
+    }
   });
   return chips.length ? `<div class="attr-chips">${chips.join('')}</div>` : '<div class="cell-sub">No custom attributes set</div>';
 }
