@@ -17,6 +17,8 @@ First run loads a realistic sample dataset so the dashboard is not empty. Use **
 
 ## What it tracks
 
+<img width="972" height="648" alt="Screenshot From 2026-11-25 15-35-32" src="https://github.com/user-attachments/assets/ed5e3940-034f-42f2-bfe5-87df487faaba" />
+
 **Sources** — job boards, company career pages, recruiters/agencies, referrals, communities. Each source has a check cadence and a last-checked date. The dashboard lists sources that are due or overdue, and each source shows how many prospects, applications, and interviews it has produced.
 
 **Prospects** — each role you are considering. A prospect links to a **company** (the direct employer) and/or an **agency** (a recruiter or staffing firm). Either one can be set; the direct company can stay unknown at first. When an agency is involved it is shown everywhere the company is, for example `Northwind Labs · via Bright Recruiting`, or the agency name alone if the company is not known yet.
